@@ -11,8 +11,9 @@ define('APPSECRET', "1383d90761ac8ff423a904ae7499cb7d");
 define('APP_ID', "wx13312d42ce40f570");
 define('APP_SECRET', 'eaa3f3d5de3103a251ab5f3e06053658');
 
-define("LOG_FILE", "/tmp/log/noovo.log");
-
+//define("LOG_FILE", "/tmp/log/noovo.log");
+require_once(dirname(__FILE__) . '/global.php');
+require_once(dirname(__FILE__) . '/utils.php');
 require_once(dirname(__FILE__) . '/parser.php');
 require_once(dirname(__FILE__) . '/common.php');
 require_once(dirname(__FILE__) . '/core.php');

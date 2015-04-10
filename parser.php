@@ -1,21 +1,13 @@
 <?php
 
 // parser user's input
-define("INPUT_ELSE",          0);
-define("INPUT_ABOUT",         1);
-define("INPUT_LUNCH",         2);
-define("INPUT_CONTACT",       3);
-define("INPUT_TOOLS",         4);
-define("INPUT_TOOLS_WEATHER", 41);
-define("INPUT_TOOLS_JOKE",    42);
-
 function get_keyword($content)
 {
 	$keyword = "";
 
 	// judge whether have '+'
 	$plusPos = strpos("$content", "+");
-	file_put_contents(LOG_FILE, "plusPos = $plusPos\n", FILE_APPEND);
+	//file_put_contents(LOG_FILE, "plusPos = $plusPos\n", FILE_APPEND);
 
 	if ($plusPos == false) {
 		// don't find the +, then keyword is the whole content
@@ -58,20 +50,23 @@ function parser_user_input($content)
 	                 "contact"     => INPUT_CONTACT,
 	                 "天气"        => INPUT_TOOLS_WEATHER,
 	                 "joke"        => INPUT_TOOLS_JOKE,
-	                 "笑话"         => INPUT_TOOLS_JOKE);
+	                 "笑话"         => INPUT_TOOLS_JOKE,
+	                 "music"       => INPUT_TOOLS_MUSIC,
+	                 "音乐"         => INPUT_TOOLS_MUSIC,);
 	$input_type = INPUT_ELSE;
 
-	file_put_contents(LOG_FILE, "content = $content\n", FILE_APPEND);
+	nv_log(__FILE__, __FUNCTION__, "content = $content");
 	// get the keyword
 	$keyword = get_keyword($content);
-	file_put_contents(LOG_FILE, "keyword = $keyword\n", FILE_APPEND);
+	nv_log(__FILE__, __FUNCTION__, "keyword = $keyword");
 	
 	//traverse
 	foreach ($arr_keywords as $key => $value) {
-		file_put_contents(LOG_FILE, "key=$key\n", FILE_APPEND);
+		nv_log(__FILE__, __FUNCTION__, "key=$key");
 		if (strcmp($keyword, $key) == 0) {
 			// find the keyword
-			$input_type = $value;			
+			$input_type = $value;	
+			break;		
 		}
 	}
 

@@ -1,7 +1,7 @@
 <?php
 
 // display
-function displayText($obj, $content)
+function display_text($obj, $content)
 {
     if (!isset($content) || empty($content)) {
         return "";
