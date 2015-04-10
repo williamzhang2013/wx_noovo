@@ -1,9 +1,7 @@
 <?php
 
-//define("LOG_FILE", "/tmp/log/noovo.log");
-define("HELLO_MSG", "输入'about'可以浏览公司介绍\n输入'吃饭'可以订餐\n输入'contact+英文名'可以查询员工信息\n输入'天气+城市'可以查询城市天气预报\n输入'joke'可以放松一下");
-
 nv_begin_log(__FILE__, __FUNCTION__, "Main Entry");
+load_nv_data();
 if (isset($_GET['echostr'])) {
     valid();
 } else {
@@ -99,73 +97,80 @@ function receiveText($obj)
 {
 	$text = trim($obj->Content);
 	nv_log(__FILE__, __FUNCTION__,  "receive text: $obj->Content, text=$text");
+	
+	// run the handler
+	global $handler_arr, $g_main_state;
+	$handler = $handler_arr[$g_main_state];
+	nv_log(__FILE__, __FUNCTION__, "handler = $handler");
+	$handler();
+	
 
 	//get the input type
-	$input_type = parser_user_input($text);
-	$result = "";
-	nv_log(__FILE__, __FUNCTION__, "input_type = $input_type");
-	switch ($input_type) {
-		case INPUT_ABOUT:
-			$arrItem = array();
-			$arrItem['Title'] = "Noovo电子简介";
-			$arrItem['Description'] = "Noovo Technology Corporation_是一个国际化的科技企业，主要从事开发、设计、生产和销售数字电视相关硬件、软件和服务。特别在Wi-Fi DTV Tuner产品领域，Noovo是主要的供应商之一。";
-			$arrItem['PicUrl'] = "http://www.noovo.co/upload_file/page/150/clone_714.jpg";
-			$arrItem['Url'] = "http://www.noovo.co/companyinformationtw";
-			$articles = array($arrItem);
-			$result = transmitNews($obj, $articles);
-			break;
+// 	$input_type = parser_user_input($text);
+// 	$result = "";
+// 	nv_log(__FILE__, __FUNCTION__, "input_type = $input_type");
+// 	switch ($input_type) {
+// 		case INPUT_ABOUT:
+// 			$arrItem = array();
+// 			$arrItem['Title'] = "Noovo电子简介";
+// 			$arrItem['Description'] = "Noovo Technology Corporation_是一个国际化的科技企业，主要从事开发、设计、生产和销售数字电视相关硬件、软件和服务。特别在Wi-Fi DTV Tuner产品领域，Noovo是主要的供应商之一。";
+// 			$arrItem['PicUrl'] = "http://www.noovo.co/upload_file/page/150/clone_714.jpg";
+// 			$arrItem['Url'] = "http://www.noovo.co/companyinformationtw";
+// 			$articles = array($arrItem);
+// 			$result = transmitNews($obj, $articles);
+// 			break;
 
-		case INPUT_CONTACT:
-			$name = get_input_real_content($text);
-			nv_log(__FILE__, __FUNCTION__, "name = $name");
-			//$conn = contact_connect();
-			$info = contact_query(strtolower(trim($name)));
+// 		case INPUT_CONTACT:
+// 			$name = get_input_real_content($text);
+// 			nv_log(__FILE__, __FUNCTION__, "name = $name");
+// 			//$conn = contact_connect();
+// 			$info = contact_query(strtolower(trim($name)));
 
-			$content = generate_contact_card($info);
-			$result = display_text($obj, $content);
-			break;
+// 			$content = generate_contact_card($info);
+// 			$result = display_text($obj, $content);
+// 			break;
 
-		case INPUT_LUNCH:
-			$content = "订餐:Comming soon...";
-			$result = display_text($obj, $content);
-			break;
+// 		case INPUT_LUNCH:
+// 			$content = "订餐:Comming soon...";
+// 			$result = display_text($obj, $content);
+// 			break;
 
-		case INPUT_TOOLS_WEATHER:
-			$city = get_input_real_content($text);
-			nv_log(__FILE__, __FUNCTION__, "city = $city");
+// 		case INPUT_TOOLS_WEATHER:
+// 			$city = get_input_real_content($text);
+// 			nv_log(__FILE__, __FUNCTION__, "city = $city");
 
-			$url = "http://apix.sinaapp.com/weather/?appkey=".$object->ToUserName."&city=".urlencode($city);
-			$output = file_get_contents($url);
-			$content = json_decode($output, true);
-			$result = transmitNews($obj, $content);
-			break;
+// 			$url = "http://apix.sinaapp.com/weather/?appkey=".$object->ToUserName."&city=".urlencode($city);
+// 			$output = file_get_contents($url);
+// 			$content = json_decode($output, true);
+// 			$result = transmitNews($obj, $content);
+// 			break;
 
-		case INPUT_TOOLS_JOKE:
-			$url = "http://apix.sinaapp.com/joke/?appkey=trialuser";
-			$output = file_get_contents($url);
-			$content = json_decode($output, true);
-			$result = display_text($obj,  substr($content, 0, strlen($content)-30));
-			break;
+// 		case INPUT_TOOLS_JOKE:
+// 			$url = "http://apix.sinaapp.com/joke/?appkey=trialuser";
+// 			$output = file_get_contents($url);
+// 			$content = json_decode($output, true);
+// 			$result = display_text($obj,  substr($content, 0, strlen($content)-30));
+// 			break;
 
-		case INPUT_TOOLS_MUSIC:
-			$music = get_input_real_content($text);
-			nv_log(__FILE__, __FUNCTION__, "music = $music");
-			$music_info = get_music_info($music);
-			nv_log(__FILE__, __FUNCTION__, "music_info = $music_info");
-			if (is_array($music_info)) {
-				$result = display_music($obj, $music_info);
-			} else {
-				$result = display_text($obj, $music_info);
-			}
-			break;
+// 		case INPUT_TOOLS_MUSIC:
+// 			$music = get_input_real_content($text);
+// 			nv_log(__FILE__, __FUNCTION__, "music = $music");
+// 			$music_info = get_music_info($music);
+// 			nv_log(__FILE__, __FUNCTION__, "music_info = $music_info");
+// 			if (is_array($music_info)) {
+// 				$result = display_music($obj, $music_info);
+// 			} else {
+// 				$result = display_text($obj, $music_info);
+// 			}
+// 			break;
 
-		case INPUT_ELSE:
-		default:
-			$content = HELLO_MSG;
-			$result = display_text($obj, $content);
-			break;
-	}
-	return $result;
+// 		case INPUT_ELSE:
+// 		default:
+// 			$content = HELLO_MSG;
+// 			$result = display_text($obj, $content);
+// 			break;
+// 	}
+// 	return $result;
 }
 
 function responseMsg()
