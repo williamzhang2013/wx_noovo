@@ -19,6 +19,37 @@ function display_text($obj, $content)
     return $resultStr;
 }
 
+function display_news($object, $newsArray)
+{
+	if(!is_array($newsArray)){
+		return "";
+	}
+	$itemTpl = "    <item>
+                    <Title><![CDATA[%s]]></Title>
+                    <Description><![CDATA[%s]]></Description>
+                    <PicUrl><![CDATA[%s]]></PicUrl>
+                    <Url><![CDATA[%s]]></Url>
+                    </item>";
+
+	$item_str = "";
+	foreach ($newsArray as $item){
+		$item_str .= sprintf($itemTpl, $item['Title'], $item['Description'], $item['PicUrl'], $item['Url']);
+	}
+	$newsTpl = "<xml>
+	<ToUserName><![CDATA[%s]]></ToUserName>
+	<FromUserName><![CDATA[%s]]></FromUserName>
+	<CreateTime>%s</CreateTime>
+	<MsgType><![CDATA[news]]></MsgType>
+	<Content><![CDATA[]]></Content>
+	<ArticleCount>%s</ArticleCount>
+	<Articles>
+	$item_str</Articles>
+	</xml>";
+
+	$result = sprintf($newsTpl, $object->FromUserName, $object->ToUserName, time(), count($newsArray));
+	return $result;
+}
+
 function display_music($obj, $music)
 {
     // if (is_array($music) || count($music) != 0) {
