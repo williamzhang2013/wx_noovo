@@ -26,12 +26,18 @@ define("EVENT_MUSIC",         "handler_music");
 // define("INPUT_TOOLS_JOKE",    42);
 // define("INPUT_TOOLS_MUSIC",   43);
 
-define("HELLO_ABOUT",         "输入'about'可以浏览公司介绍\n");
-define("HELLO_ORDER",         "输入'吃饭'可以订餐\n");
-define("HELLO_CONTACT",       "输入'contact+英文名'可以查询员工信息\n");
-define("HELLO_WEATHER",       "输入'天气+城市'可以查询城市天气预报\n");
-define("HELLO_JOKE",          "输入'joke'可以放松一下");
-define("HELLO_MUSIC",         "输入'music+歌名@歌手'可以点歌");
+define("FRYING",              1);
+define("RICE",                2);
+define("SOUP",                3);
+define("SNACK",               4);
+define("ATEA",                5);
+
+define("HELLO_ABOUT", "输入'about'可以浏览公司介绍");
+define("HELLO_ORDER", "输入'吃饭'可以订餐");
+define("HELLO_CONTACT", "输入'contact+英文名'可以查询员工信息");
+define("HELLO_WEATHER", "输入'天气+城市'可以查询城市天气预报");
+define("HELLO_JOKE", "输入'joke'可以放松一下");
+define("HELLO_MUSIC", "输入'音乐+歌名@歌手'可以查询音乐");
 define("HELLO_MSG", "输入'about'可以浏览公司介绍\n输入'吃饭'可以订餐\n输入'contact+英文名'可以查询员工信息\n输入'天气+城市'可以查询城市天气预报\n输入'joke'可以放松一下");
 
 // variable

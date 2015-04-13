@@ -1,7 +1,7 @@
 <?php
 
 function handler_help($data) {
-	$content = HELLO_MSG;
+	$content = HELLO_ABOUT."\n".HELLO_ORDER."\n".HELLO_CONTACT."\n".HELLO_WEATHER."\n".HELLO_JOKE."\n".HELLO_MUSIC;
 	$result = display_text($data[0], $content);
 	return $result;
 }
