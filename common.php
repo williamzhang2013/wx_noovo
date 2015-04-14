@@ -185,6 +185,27 @@ function contact_ename_match($name1, $name2)
     }
 }
 
+function generate_menu_info()
+{
+	$menu = array("restName"    =>"饭店名称",
+	              "cName"       =>"菜名",
+	              "cType"       =>"品种",
+	              "cPrice"      =>"价格",
+	              "cID"         =>"ID",
+	              "cPhoto"      =>"照片",
+	              "rsv0"        =>"保留1",
+	              "rsv1"        =>"保留2");
+}
+
+function generate_order_info() {
+	$order = array("openID"     =>"wxID",
+	               "eName"      =>"英文名",
+	               "date"       =>"日期",
+	               "type"       =>"种类",
+	               "cID"        =>"ID",
+	               "state"      =>"状态");
+}
+
 function generate_contact_card($info)
 {
     $keywords = array("eCode"     => "工号:",
@@ -207,41 +228,6 @@ function generate_contact_card($info)
         }
     }
     return $card;
-}
-
-// database
-function contact_connect()
-{
-    $conn = mysql_connect("localhost", "root", "root");
-    if(!$conn) {
-        //die('Could not connect: ' . mysql_error());
-        exit(0);
-    }
-    return $conn;
-}
-
-function contact_query($name)
-{
-    file_put_contents(LOG_FILE, "contact_query!\n", FILE_APPEND);
-    $conn = contact_connect(); //mysql_connect("localhost", "root", "root");
-    if(!$conn) {
-        //die('Could not connect: ' . mysql_error());
-        exit(0);
-    }
-    mysql_select_db("nv_contact", $conn);
-
-    $result = mysql_query("SELECT * FROM EmployeeInfo");
-    while($row = mysql_fetch_array($result)) {
-        $eName = $row['eName'];
-        if (contact_ename_match($name, $eName)) {
-            // FOUND!!!
-            file_put_contents(LOG_FILE, "Find the match record! \n", FILE_APPEND);
-            return $row;
-        }
-    }
-
-    // how to return???
-    return false;
 }
 
 ?>

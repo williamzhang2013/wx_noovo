@@ -21,8 +21,22 @@ function handler_about($data){
 function handler_order($data) {
 	global $g_main_state;
 	$g_main_state = STATE_ORDER; // init state --> order state
-	//save_nv_data();
-	$content = "订餐:Comming soon...";
+	
+	$content = "";
+	$obj = $data[0];
+	$openID = $obj->ToUserName;
+	if(is_user_login($openID)) {
+		// already login
+		save_usr_main_state($openID);
+		
+		$content = HELP_MENU_FRY . HELP_MENU_RICE . HELP_ORDER_QUIT; 
+	} else {
+		// indicate usr login
+		$content = PLEASE_LOGIN;
+		//user_login($oepnID, $usr);
+	}
+
+	//$content = "订餐:Comming soon...";
 	$result = display_text($data[0], $content);	
 	return $result;
 }
@@ -73,18 +87,57 @@ function handler_music($data) {
 
 function handler_minit($event, $data) {
 	nv_log(__FILE__, __FUNCTION__, "event=$event");
-	$func = $event;
+	$handler_arr = array("handler_help",
+			             "handler_help",
+			             "handler_about",
+			             "handler_order",
+			             "handler_contact",
+			             "handler_weather",
+			             "handler_joke", 
+	                     "handler_music");
+	$func = $handler_arr[$event];
 	$result = $func($data);	
+	return $result;
+}
+
+//////////////////////////////////////////////////////////////////////////
+function handler_order_help($data) {
+	$content = "This is the order state help!!!";
+	$result = display_text($data[0], $content);
+	return $result;
+}
+
+function handler_order_quit($data) {
+	global $g_main_state;
+	$g_main_state = STATE_INIT; // init state --> order state
+	$obj = $data[0];
+	$openID = $obj->ToUserName;
+	save_usr_main_state($openID);
+	
+	$content = AFTER_ORDER_QUIT;
+	$result = display_text($data[0], $content);
 	return $result;
 }
 
 function handler_morder($event, $data) {
 	nv_log(__FILE__, __FUNCTION__, "order state");
-	global $g_main_state;
-	$g_main_state = STATE_INIT; // init state --> order state
-	save_nv_data();
+	$handler_arr = array("handler_order_help",
+			"handler_order_help",
+			"handler_about",
+			"handler_order",
+			"handler_contact",
+			"handler_weather",
+			"handler_joke",
+			"handler_music",
+	        "handler_order_quit");
+	$func = $handler_arr[$event];
+	$result = $func($data);
+	return $result;
+// 	global $g_main_state;
+// 	$g_main_state = STATE_INIT; // init state --> order state
+// 	save_nv_data();
 	
-	handler_help($data);
+// 	handler_help($data);
 	
 }
 // parser, get the func

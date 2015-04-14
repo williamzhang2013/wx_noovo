@@ -53,6 +53,149 @@ function save_nv_data() {
 }
 
 ///////////////////////////////////////////////////////////
+//                    For Database                       //
+///////////////////////////////////////////////////////////
+function db_connect() {
+	$conn = mysql_connect("localhost", "root", "root");
+	if(!$conn) {
+		$err = mysql_error();
+		nv_log(__FILE__, __FUNCTION__, "Could not connect: $err");
+		exit(0);
+	}
+		
+	return $conn;
+}
+
+function contact_query_with_ename($ename) {
+	//
+}
+
+function contact_query($name) {
+	nv_log(__FILE__, __FUNCTION__, "contact_query!");
+	$conn = db_connect(); //mysql_connect("localhost", "root", "root");
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+
+	$result = mysql_query("SELECT * FROM EmployeeInfo");
+	while($row = mysql_fetch_array($result)) {
+		$eName = $row['eName'];
+		if (contact_ename_match($name, $eName)) {
+			// FOUND!!!
+			nv_log(__FILE__, __FUNCTION__, "Find the match record!");
+			return $row;
+		}
+	}
+	
+	mysql_free_result($result);
+	return false;
+}
+
+function menu_search() {
+	//
+}
+
+function order_login() {
+	//
+}
+
+function is_user_login($openID) {
+	$eName = "";
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$sql = "SELECT * FROM UserInfo WHERE openID = '" .$openID . "'";
+	$result = mysql_query($sql);
+	if (!$result) {
+		$err = mysql_error();
+		nv_log(__FILE__, __FUNCTION__, "Could not query:$err");
+		exit(0);
+	} else {
+		if ($row = mysql_fetch_array($result)) {
+			$eName = $row['eName'];
+		}
+	}
+	
+	mysql_free_result($result);
+	nv_log(__FILE__, __FUNCTION__, "eName = $eName");
+	if (strlen($eName)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function user_login($openID, $usr) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$result = mysql_query("SELECT * FROM UserInfo WHERE openID = $openID");
+	if (!$result) {
+		$err = mysql_error();
+		nv_log(__FILE__, __FUNCTION__, "Could not query:$err");
+		exit(0);
+	} else {
+		$sql = "";
+		if ($row = mysql_fetch_array($result)) {
+			$sql = "UPDATE UserInfo SET eName = '" .$usr ."' WHERE openID = '" . $openID . "'";
+			nv_log(__FILE__, __FUNCTION__, "find the openID, but no eName, use update sql: $sql");
+		} else {
+			$sql = "INSERT INTO UserInfo (version, openID, eName, mState, rsv0, rsv1) VALUES ('";
+			$sql.= USER_INFO_VER . "', '" . $openID ."', '" . "$usr" ."', '" .$GLOBALS['$g_main_state'] . "', '', '')"; 
+			nv_log(__FILE__, __FUNCTION__, "NOT find the openID, use insert sql: $sql ");
+			//mysql_query("INSERT INTO UserInfo (version, openID, eName, mState, rsv0, rsv1) VALUES ('1.0.0', 'gh_82eb59bbc333', 'william.zhang', '', '', '')");
+		}
+		mysql_query($sql);
+	}
+}
+
+function load_usr_main_state($openID) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$sql = "SELECT * FROM UserInfo WHERE openID = '" .$openID . "'";
+	$result = mysql_query($sql);
+	$state = STATE_INIT;
+	$row = mysql_fetch_array($result);
+	if ($row) {
+		$state =  $row['mState'];
+	}
+	
+	nv_log(__FILE__, __FUNCTION__, "state = $state");
+	return $state;
+}
+
+function save_usr_main_state($openID) {
+	global $g_main_state;
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$sql = "SELECT * FROM UserInfo WHERE openID = '" .$openID . "'";
+	$result = mysql_query($sql);
+	$row = mysql_fetch_array($result);
+	$sql = "UPDATE UserInfo SET mState = '" .$g_main_state ."' WHERE openID = '" . $openID . "'";
+	mysql_query($sql);
+}
+
+///////////////////////////////////////////////////////////
 //                    For NV Log                         //
 ///////////////////////////////////////////////////////////
 function nv_clear_log() {

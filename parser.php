@@ -52,7 +52,9 @@ function get_event($content)
 			"joke"        => EVENT_JOKE,
 			"笑话"         => EVENT_JOKE,
 			"music"       => EVENT_MUSIC,
-			"音乐"         => EVENT_MUSIC,);
+			"音乐"         => EVENT_MUSIC,
+	        "exit"        => EVENT_QUIT,
+	        "quit"        => EVENT_QUIT);
 	$event = EVENT_UNDEF;
 	$keyword = get_keyword($content);
 	foreach ($arr_keywords as $key => $value) {

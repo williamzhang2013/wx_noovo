@@ -1,7 +1,6 @@
 <?php
 
 nv_begin_log(__FILE__, __FUNCTION__, "Main Entry");
-load_nv_data();
 if (isset($_GET['echostr'])) {
     valid();
 } else {
@@ -93,7 +92,8 @@ function responseMsg()
 		 the best way is to check the validity of xml by yourself */
 		libxml_disable_entity_loader(true);
 		$postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-
+		
+		$GLOBALS['g_main_state'] = load_usr_main_state($postObj->ToUserName);
 		$result = "";
 		$rx_type = trim($postObj->MsgType);
 		switch ($rx_type) {
