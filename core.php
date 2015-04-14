@@ -93,7 +93,7 @@ function responseMsg()
 		libxml_disable_entity_loader(true);
 		$postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
 		
-		$GLOBALS['g_main_state'] = load_usr_main_state($postObj->ToUserName);
+		$GLOBALS['g_main_state'] = load_usr_main_state($postObj->FromUserName);
 		$result = "";
 		$rx_type = trim($postObj->MsgType);
 		switch ($rx_type) {

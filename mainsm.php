@@ -24,7 +24,8 @@ function handler_order($data) {
 	
 	$content = "";
 	$obj = $data[0];
-	$openID = $obj->ToUserName;
+	$openID = $obj->FromUserName;
+	nv_log(__FILE__, __FUNCTION__, "openID=$openID");
 	if(is_user_login($openID)) {
 		// already login
 		save_usr_main_state($openID);
@@ -101,6 +102,13 @@ function handler_minit($event, $data) {
 }
 
 //////////////////////////////////////////////////////////////////////////
+function handler_order_login_tip($data) {
+	$content = PLEASE_LOGIN;
+	$result = display_text($data[0], $content);
+
+	return $result;
+}
+
 function handler_order_help($data) {
 	$content = "This is the order state help!!!";
 	$result = display_text($data[0], $content);
@@ -111,7 +119,7 @@ function handler_order_quit($data) {
 	global $g_main_state;
 	$g_main_state = STATE_INIT; // init state --> order state
 	$obj = $data[0];
-	$openID = $obj->ToUserName;
+	$openID = $obj->FromUserName;
 	save_usr_main_state($openID);
 	
 	$content = AFTER_ORDER_QUIT;
@@ -119,26 +127,37 @@ function handler_order_quit($data) {
 	return $result;
 }
 
+function handler_order_login($data) {
+	$content = "login:";
+	$result = display_text($data[0], $content);
+	return $result;
+}
+
 function handler_morder($event, $data) {
 	nv_log(__FILE__, __FUNCTION__, "order state");
-	$handler_arr = array("handler_order_help",
-			"handler_order_help",
-			"handler_about",
-			"handler_order",
-			"handler_contact",
-			"handler_weather",
-			"handler_joke",
-			"handler_music",
-	        "handler_order_quit");
-	$func = $handler_arr[$event];
-	$result = $func($data);
-	return $result;
-// 	global $g_main_state;
-// 	$g_main_state = STATE_INIT; // init state --> order state
-// 	save_nv_data();
-	
-// 	handler_help($data);
-	
+	$handler_arr = array("handler_order_help",    // 0
+			             "handler_order_help",
+						 "handler_order_help",
+						 "handler_order_help",
+						 "handler_order_help",
+						 "handler_order_help",   // 5
+						 "handler_order_help",
+						 "handler_order_help",
+				         "handler_order_quit",
+						 "handler_order_login");
+	$obj = $data[0];
+	$openID = $obj->FromUserName;
+	$result = "";
+	if (is_user_login($openID)) {
+		// already login --- normal procedure
+		$func = $handler_arr[$event];
+		$result = $func($data);
+	} else {
+		// still not login --- login first
+		$result = handler_order_login_tip($data);
+	}
+
+	return $result;	
 }
-// parser, get the func
+
 ?>

@@ -18,6 +18,7 @@ define("EVENT_JOKE",          6);
 define("EVENT_MUSIC",         7);
 
 define("EVENT_QUIT",          8);
+define("EVENT_LOGIN",         9);
 
 // define("INPUT_ELSE",          0);
 // define("INPUT_ABOUT",         1);
@@ -51,7 +52,7 @@ define("HELLO_JOKE", "输入'joke'可以放松一下");
 define("HELLO_MUSIC", "输入'音乐+歌名@歌手'可以查询音乐");
 define("HELLO_MSG", "输入'about'可以浏览公司介绍\n输入'吃饭'可以订餐\n输入'contact+英文名'可以查询员工信息\n输入'天气+城市'可以查询城市天气预报\n输入'joke'可以放松一下");
 
-define("PLEASE_LOGIN", "您还没有注册，请输入您的英文名:\n");
+define("PLEASE_LOGIN", "您还没有注册，请输入您的英文名");
 define("HELP_MENU_FRY",   "输入'menu+炒菜'会显示炒菜菜单\n");
 define("HELP_MENU_RICE",  "输入'menu+盖饭'会显示盖浇饭菜单\n");
 define("HELP_MENU_SOUP",  "输入'menu+汤'会显示汤\n");
