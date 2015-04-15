@@ -149,7 +149,9 @@ function handler_login_login($data) {
 			
 			// save to db
 			user_login($openID, $usrname);
-			$content = HELP_MENU_FRY . HELP_MENU_RICE . HELP_ORDER_QUIT; 
+			$content = HELP_MENU_FRY . HELP_MENU_RICE;
+			$content .= HELP_ORDER_ORDER . "\n" . HELP_ORDER_DEL . "\n" . HELP_ORDER_DELALL . "\n" . HELP_ORDER_LIST . "\n";
+			$content .= HELP_ORDER_QUIT; 
 		} else {
 			// not nv employee
 			$content = HELP_NOT_NVNESE . "\n" . PLEASE_LOGIN;
