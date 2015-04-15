@@ -55,7 +55,14 @@ function get_event($content)
 			"音乐"         => EVENT_MUSIC,
 	        "exit"        => EVENT_QUIT,
 	        "quit"        => EVENT_QUIT,
-	        "login"       => EVENT_LOGIN);
+	        "login"       => EVENT_LOGIN,
+			"lock"        => EVENT_LOCK,
+			"unlock"      => EVENT_UNLOCK,
+			"del"         => EVENT_DEL,
+	        "sum"         => EVENT_QUERY,
+	        "menu"        => EVENT_LSMENU,
+	        "rsv"         => EVENT_RSV,
+	        "next"        => EVENT_NEXT);
 	$event = EVENT_UNDEF;
 	$keyword = get_keyword($content);
 	foreach ($arr_keywords as $key => $value) {

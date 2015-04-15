@@ -73,7 +73,7 @@ function receiveText($obj)
 	
 	// run the handler
 	global $g_main_state;
-	$handler_arr = array("handler_minit", "handler_morder");
+	$handler_arr = array("handler_minit", "handler_morder", "handler_mlogin", "handler_madmin");
 	$handler = $handler_arr[$g_main_state];
 	nv_log(__FILE__, __FUNCTION__, "handler = $handler");
 	$result = $handler($event, $data);
