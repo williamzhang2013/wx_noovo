@@ -180,6 +180,45 @@ function is_user_nv_employee($eName) {
 	return $result;
 }
 
+function is_new_user($openID) {
+	$found = false;
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$sql = "SELECT * FROM UserInfo WHERE openID = '" .$openID . "'";
+	$result = mysql_query($sql);
+	if (!$result) {
+		$err = mysql_error();
+		nv_log(__FILE__, __FUNCTION__, "Could not query:$err");
+		exit(0);
+	} else {
+		if ($row = mysql_fetch_array($result)) {
+			$found = true;
+		}
+	}
+	
+	mysql_free_result($result);
+	nv_log(__FILE__, __FUNCTION__, "found = $found");
+	return !$found;
+}
+
+function add_new_user($openID){
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$sql = "INSERT INTO UserInfo (version, openID, eName, mState, sState, perm, rsv0, rsv1) VALUES ('";
+	$sql.= USER_INFO_VER . "', '" . $openID ."', '', '" .$GLOBALS['$g_main_state'] . "', '', '','','')";
+	nv_log(__FILE__, __FUNCTION__, "NOT find the openID, use insert sql: $sql ");
+	mysql_query($sql);
+}
+
 function is_user_login($openID) {
 	$eName = "";
 	$conn = db_connect();
@@ -218,7 +257,8 @@ function user_login($openID, $usr) {
 	}
 	mysql_select_db("nv_contact", $conn);
 	
-	$result = mysql_query("SELECT * FROM UserInfo WHERE openID = $openID");
+	$sql = "SELECT * FROM UserInfo WHERE openID = '" .$openID . "'";
+	$result = mysql_query($sql);
 	if (!$result) {
 		$err = mysql_error();
 		nv_log(__FILE__, __FUNCTION__, "Could not query:$err");

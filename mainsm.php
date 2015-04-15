@@ -34,8 +34,14 @@ function handler_idle_order($data) {
 		$content .= HELP_ORDER_ORDER . "\n" . HELP_ORDER_DEL . "\n" . HELP_ORDER_DELALL . "\n" . HELP_ORDER_LIST . "\n";
 		$content .= HELP_ORDER_QUIT;
 	} else {
+		// save the openID -- user login
+		if (is_new_user($openID)) {
+			add_new_user($openID);
+		}
+		
 		// indicate usr login
 		$g_main_state = STATE_LOGIN; // init state --> login state
+		save_usr_main_state($openID);
 		$content = PLEASE_LOGIN;
 	}
 
@@ -87,7 +93,7 @@ function handler_idle_music($data) {
 	return $result;
 }
 
-function handler_minit($event, $data) {
+function handler_midle($event, $data) {
 	nv_log(__FILE__, __FUNCTION__, "event=$event");
 	$result = "";
 	switch ($event) {
@@ -134,6 +140,7 @@ function handler_login_login($data) {
 	$content = "";
 	$result = "";
 	
+	nv_log(__FILE__, __FUNCTION__, "usrname=$usrname");
 	$nvadmin = ADMIN_NAME . '@' .ADMIN_PWD;
 	if (strcmp($usrname, $nvadmin) == 0) {
 		// admin login
@@ -158,7 +165,7 @@ function handler_login_login($data) {
 		}
 	}	
 	$result = display_text($obj, $content);
-	return result;
+	return $result;
 }
 
 function handler_mlogin($event, $data) {
