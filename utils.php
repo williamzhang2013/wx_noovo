@@ -113,10 +113,64 @@ function list_menu($type) {
 	return $menu_arr;
 }
 
+function order_courses($openID, $courses) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$now = date("Y-m-d");
+	nv_log(__FILE__, __FUNCTION__, "today=$now");
+	$eName = get_usr_ename($openID);
+	foreach ($courses as $course) {
+		// save a course
+		$sql = "INSERT INTO OrderInfo (version, openID, eName, course, type, dt, rsv0, rsv1) VALUES ('";
+		$sql .= USER_INFO_VER . "', '". $openID . "', '" . $eName ." ', '" . $course ."', '', '". $now . "', '', '')";
+		mysql_query($sql);
+	}
+}
+
+function delete_courses($openID, $courses) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$now = date("Y-m-d");	
+	foreach ($courses as $course) {
+		// save a course
+		$sql = "DELETE FROM OrderInfo WHERE openID = '";
+		$sql .= $openID . "'AND course = '" .$course ."'AND dt = '" . $now ."'";
+		nv_log(__FILE__, __FUNCTION__, "del sql = $sql");
+		mysql_query($sql);
+	}
+}
+
+function get_today_usr_order($openID) {
+	$today = date("Y-m-d");
+	$courses = array();
+	
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$sql = "SELECT * FROM OrderInfo WHERE dt = '" .$today . "' AND openID = '" . $openID . "'";
+	$result = mysql_query($sql);
+	while ($row = mysql_fetch_array($result)) {
+		$courses[] = $row['course'];	
+	}	
+	
+	return $courses;
+}
+
 // the order_arr is two dementions array
 // the order_arr_item should be (course, price, total)
 function get_today_order() {
-	$today = date(Y-m-d);
+	$today = date("Y-m-d");
 	$order_arr = array();
 	$course = "";
 	$found = false;
@@ -178,6 +232,20 @@ function is_user_nv_employee($eName) {
 	}
 	
 	return $result;
+}
+
+function get_usr_ename($openID) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$sql = "SELECT * FROM UserInfo WHERE openID = '" .$openID . "'";
+	$result = mysql_query($sql);
+	$row = mysql_fetch_array($result);
+	return $row['eName'];
 }
 
 function is_new_user($openID) {
@@ -325,7 +393,7 @@ function lock_order_system() {
 	$sql = "SELECT * FROM Operate";
 	$result = mysql_query($sql);
 	$row = mysql_fetch_array($result);
-	$now = date(Y-m-d);
+	$now = date("Y-m-d");
 	$islocked = 1;
 	$sql = "UPDATE Operate SET lock_dt = '" .$now . "' , isLocked = '" . $islocked ."' WHERE operID = '1'";
 	mysql_query($sql);
@@ -342,7 +410,7 @@ function unlock_order_system() {
 	$sql = "SELECT * FROM Operate";
 	$result = mysql_query($sql);
 	$row = mysql_fetch_array($result);
-	$now = date(Y-m-d);
+	$now = date("Y-m-d");
 	$islocked = 0;
 	$sql = "UPDATE Operate SET lock_dt = '" .$now . "' , isLocked = '" . $islocked ."' WHERE operID = '1'";
 	mysql_query($sql);

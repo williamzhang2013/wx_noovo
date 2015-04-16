@@ -27,6 +27,7 @@ define("EVENT_QUERY",         13);
 define("EVENT_LSMENU",        14);
 define("EVENT_RSV",           15);
 define("EVENT_NEXT",          16);
+define("EVENT_LIST",          17);
 
 
 
@@ -94,6 +95,8 @@ define("HELP_ADMIN_QUERY_WEEK", "输入'sum+week'可以查询本周的订餐情�
 define("HELP_ADMIN_QUERY_MONTH","输入'sum+month'可以查询本月的订餐情况");
 
 define("TODAY_NO_ORDER","今天没人订餐!");
+define("TODAY_USR_NOORDER", "今天您没有订餐");
+define("TODAY_USR_ORDER", "今天您订了:");
 
 define("LINES_PER_PAGE",       100);
 

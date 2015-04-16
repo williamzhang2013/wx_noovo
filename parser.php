@@ -62,7 +62,9 @@ function get_event($content)
 	        "sum"         => EVENT_QUERY,
 	        "menu"        => EVENT_LSMENU,
 	        "rsv"         => EVENT_RSV,
-	        "next"        => EVENT_NEXT);
+	        "next"        => EVENT_NEXT,
+	        "ls"          => EVENT_LIST, 
+	        "list"        => EVENT_LIST);
 	$event = EVENT_UNDEF;
 	$keyword = get_keyword($content);
 	foreach ($arr_keywords as $key => $value) {
@@ -74,6 +76,16 @@ function get_event($content)
 		}
 	}
 	return $event;	
+}
+
+// input:  $order[string]     --- a list of course
+// output: $course_arr[array] --- array
+function get_course_list($order) {
+	$courses = split("@|＠", $order);
+	foreach ($courses as $course) {
+		nv_log(__FILE__, __FUNCTION__, "course = $course");
+	}
+	return $courses;
 }
 
 // function parser_user_input($content)

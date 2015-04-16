@@ -119,16 +119,7 @@ function handler_midle($event, $data) {
 			$result = handler_idle_help($data);
 			break;
 	}
-// 	$handler_arr = array("handler_help",
-// 			             "handler_help",
-// 			             "handler_about",
-// 			             "handler_order",
-// 			             "handler_contact",
-// 			             "handler_weather",
-// 			             "handler_joke", 
-// 	                     "handler_music");
-// 	$func = $handler_arr[$event];
-// 	$result = $func($data);	
+	
 	return $result;
 }
 
@@ -200,7 +191,7 @@ function handler_admin_help($data) {
 
 function handler_admin_query($data) {
 	$type = strtolower(trim($data[1]));
-	$query_date = date(Y-m-d);
+	$query_date = date("Y-m-d");
 	$content = "";
 	$result = "";
 	
@@ -212,11 +203,9 @@ function handler_admin_query($data) {
 			$content = TODAY_NO_ORDER;
 		} else {
 			foreach ($order as $item) {
-				$content .= $item[0] . "    x" . $item[3]/$item[2]."---".$item[3]."\n";
+				nv_log(__FILE__, __FUNCTION__, "order item=$item[0], $item[1], $item[2]");
+				$content .= $item[0] . "        x" . $item[2]/$item[1]."    ----".$item[2]."\n";
 			}
-// 			while (list($course, $price, $sum) = each($order)) {
-// 				$content .= $course . "    x" . $sum/$price."---".$sum."\n"; 
-// 			}
 		}
 	} else if (strcmp($type, "week") == 0) {
 		// collect this week's order
@@ -293,7 +282,7 @@ function handler_order_quit($data) {
 	$openID = $obj->FromUserName;
 	save_usr_main_state($openID);
 	
-	$content = AFTER_ORDER_QUIT;
+	$content = HELLO_ABOUT."\n".HELLO_ORDER."\n".HELLO_CONTACT."\n".HELLO_WEATHER."\n".HELLO_JOKE."\n".HELLO_MUSIC;
 	$result = display_text($data[0], $content);
 	return $result;
 }
@@ -325,24 +314,79 @@ function handler_order_list_menu($data) {
 	nv_log(__FILE__, __FUNCTION__, "menu type=$type");
 	
 	$content = "";
-	$menu = list_menu($type);	
+	$menu = list_menu($type);
+	$total = 0;	
 	foreach ($menu as $item) {
-		$content .= $item[0] . "  " . $item[1] . "\n";
+		if (++$total <= LINES_PER_PAGE) {
+			$content .= $item[0] . "  " . $item[1] . "\n";
+		}
 	}
-// 	while (list($course, $price) = each($menu)) {
-// 		$content .= $course . "    " . $price . "\n";
-// 	}
 	
 	$result = display_text($data[0], $content);	
 	return $result;
 }
 
+function handler_order_next($data) {
+	$result = "";
+	return $result;
+}
+
+function handler_order_list($data) {
+	$result = "";
+	$content = "";
+	$obj = $data[0];
+	$openID = $obj->FromUserName;
+	$courses = get_today_usr_order($openID);
+	
+	if (count($courses) == 0) {
+		$content = TODAY_USR_NOORDER;
+	} else {
+		$content = TODAY_USR_ORDER;
+		foreach ($courses as $course) {
+			$content .= "\n" . $course;
+		}
+	}
+	
+	$result = display_text($obj, $content);
+	return $result;
+}
+
 function handler_order_rsv($data) {
-	//
+	$result = "";
+	$obj = $data[0];
+	$openID = $obj->FromUserName;
+	$courses = get_course_list($data[1]);
+	
+	$content = "您订了:";
+	order_courses($openID, $courses);
+	foreach ($courses as $course) {
+		$content .= "\n" . $course;
+	}
+	$result = display_text($data[0], $content);
+	return $result;
 }
 
 function handler_order_del($data) {
-	//
+	$result = "";
+	$obj = $data[0];
+	$openID = $obj->FromUserName;
+	$type = strtolower(trim($data[1]));
+	
+	$courses = array();
+	if (strcmp($type, "all") == 0) {
+		$courses = get_today_usr_order($openID);
+	} else {
+		$courses = get_course_list($data[1]);
+	}
+	
+	$content = "您取消了:";
+	delete_courses($openID, $courses);
+	foreach ($courses as $course) {
+		nv_log(__FILE__, __FUNCTION__, "del course: $course");
+		$content .= "\n" . $course;
+	}
+	$result = display_text($data[0], $content);
+	return $result;
 }
 
 function handler_morder($event, $data) {
@@ -365,29 +409,17 @@ function handler_morder($event, $data) {
 		case EVENT_DEL:
 			$result = handler_order_del($data);
 			break;
+		case EVENT_NEXT:
+			$result = handler_order_next($data);
+			break;
+		case EVENT_LIST:
+			$result = handler_order_list($data);
+			break;
 		default:
 			$result = handler_order_help($data);
 			break;
 	}
 	
-// 	$handler_arr = array("handler_order_help",    // 0
-// 			             "handler_order_help",
-// 						 "handler_order_help",
-// 						 "handler_order_help",
-// 						 "handler_order_help",
-// 						 "handler_order_help",   // 5
-// 						 "handler_order_help",
-// 						 "handler_order_help",
-// 				         "handler_order_quit",
-// 						 "handler_order_login");
-// 	$obj = $data[0];
-// 	$openID = $obj->FromUserName;
-// 	$result = "";
-	
-// 	// already login --- normal procedure
-// 	$func = $handler_arr[$event];
-// 	$result = $func($data);
-
 	return $result;	
 }
 
