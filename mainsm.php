@@ -249,10 +249,10 @@ function handler_admin_del($data) {
 	$usr_courses = split("@|＠", $data[1]);
 	$usr = $usr_courses[0];
 	
-	if (is_user_nv_employee($eName)) {
-		$openID = get_usr_openid($eName);
+	if (is_user_nv_employee($usr)) {
+		$openID = get_usr_openid($usr);
 		array_shift($usr_courses);
-		delete_courses($openID, $courses);
+		delete_courses($openID, $usr_courses);
 	} else {
 		// wrong usr
 	}
