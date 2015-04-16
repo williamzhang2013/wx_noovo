@@ -202,10 +202,14 @@ function handler_admin_query($data) {
 		if (count($order) == 0) {
 			$content = TODAY_NO_ORDER;
 		} else {
+			$sum = 0;
 			foreach ($order as $item) {
+				$sum += $item[2];
+				$typename = get_course_type_name($item[3]);
 				nv_log(__FILE__, __FUNCTION__, "order item=$item[0], $item[1], $item[2]");
-				$content .= $item[0] . "        x" . $item[2]/$item[1]."    ----".$item[2]."\n";
+				$content .= $item[0] . "(".$typename. ")        x" . $item[2]/$item[1]."    ----".$item[2]."\n";
 			}
+			$content .= "总计:  " .$sum;
 		}
 	} else if (strcmp($type, "week") == 0) {
 		// collect this week's order
@@ -343,7 +347,9 @@ function handler_order_list($data) {
 	} else {
 		$content = TODAY_USR_ORDER;
 		foreach ($courses as $course) {
-			$content .= "\n" . $course;
+			$type  = get_course_type($course);
+			$typename = get_course_type_name($type);
+			$content .= "\n" . $course . "    " . $typename;
 		}
 	}
 	
@@ -358,9 +364,15 @@ function handler_order_rsv($data) {
 	$courses = get_course_list($data[1]);
 	
 	$content = "您订了:";
-	order_courses($openID, $courses);
+	//order_courses($openID, $courses);
 	foreach ($courses as $course) {
-		$content .= "\n" . $course;
+		$type = get_course_type($course);
+		$typename = get_course_type_name($type);
+		nv_log(__FILE__, __FUNCTION__, "type=$type");
+		if ( FRYING <= $type && $type <= MARMITE) {
+			order_one_course($openID, $course, $type);
+			$content .= "\n" . $course . "   ". $typename;
+		}		
 	}
 	$result = display_text($data[0], $content);
 	return $result;

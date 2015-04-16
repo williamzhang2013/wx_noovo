@@ -1,6 +1,4 @@
 <?php
-//require_once(dirname(__FILE__) . 'global.php');
-
 ///////////////////////////////////////////////////////////
 //                    For NV Data                        //
 ///////////////////////////////////////////////////////////
@@ -113,6 +111,53 @@ function list_menu($type) {
 	return $menu_arr;
 }
 
+// function is_valid_course($course) {
+// 	$conn = db_connect();
+// 	if(!$conn) {
+// 		//die('Could not connect: ' . mysql_error());
+// 		exit(0);
+// 	}
+// 	mysql_select_db("nv_contact", $conn);
+// 	$sql = "SELECT * FROM MenuInfo WHERE course = '" . $course . "'";	
+// }
+
+// get the course' type
+// return ----- -1 don't have the course
+//               1 frying
+//               2 rice
+function get_course_type($course) {
+	$type = -1;
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$sql = "SELECT * FROM MenuInfo WHERE cName = '" . $course . "'";
+	$result = mysql_query($sql);
+	if ($row = mysql_fetch_array($result)) {
+		$type = $row['cType'];
+	}
+
+	return $type;
+}
+
+function order_one_course($openID, $course, $type) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$now = date("Y-m-d");
+	nv_log(__FILE__, __FUNCTION__, "today=$now");
+	$eName = get_usr_ename($openID);
+	
+	$sql = "INSERT INTO OrderInfo (version, openID, eName, course, type, dt, rsv0, rsv1) VALUES ('";
+	$sql .= USER_INFO_VER . "', '". $openID . "', '" . $eName ." ', '" . $course ."', '". $type ."', '". $now . "', '', '')";
+	mysql_query($sql);
+}
+
 function order_courses($openID, $courses) {
 	$conn = db_connect();
 	if(!$conn) {
@@ -186,21 +231,26 @@ function get_today_order() {
 	while ($row = mysql_fetch_array($result)) {
 		//travels the order array
 		$course = $row['course'];
-		while (list($name, $price, $sum) = each($order_arr)) {
-			if (strcmp($name, $course) == 0) {
-				$sum += $price;
+		$order_index = 0;
+		//nv_log(__FILE__, __FUNCTION__, "course = $course");
+		foreach ($order_arr as $order) {			
+			//nv_log(__FILE__, __FUNCTION__, "name=$order[0], price=$order[1], sum=$order[2], type=$order[3]");
+			if (strcmp($order[0], $course) == 0) {
+				//nv_log(__FILE__, __FUNCTION__, "FOUND!");
+				$order_arr[$order_index][2] += $order_arr[$order_index][1];
 				$found = true;
 				break;
 			}
+			$order_index++;
 		}
-		
+	
 		if (!$found) {
 			// try to get the price in another table
 			$sql1 = "SELECT * FROM MenuInfo WHERE cName = '" .$course . "'";
 			$result1 = mysql_query($sql1);
 			$row1 = mysql_fetch_array($result1);
 			// insert a new item
-			$order_arr[] = array($course, $row1['cPrice'], $row1['cPrice']);
+			$order_arr[] = array($course, $row1['cPrice'], $row1['cPrice'], $row1['cType']);
 		}
 	}
 	

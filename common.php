@@ -75,7 +75,7 @@ function display_music($obj, $music)
 
 function get_music_info($name)
 {
-    //$result = "";
+    $result = "";
     if ($name == "") {
         $result = "你还没有输入音乐名称呢";
     } else {
@@ -84,22 +84,13 @@ function get_music_info($name)
         nv_log(__FILE__, __FUNCTION__, "songs[0] = $songs[0], songs[1] = $songs[1]");
         $songName = $songs[0];
         $singerName = $songs[1];
-        
-//         $songPos = strpos("$name", "@");
-//         $songName = $name;
-//         $singerName = "";
         $url = "";
-        //if ($songPos == false) {
-        if ($strlen($singerName) == 0) {
+        if (strlen($singerName) == 0) {
             // don't find the singer name
             $url = "http://box.zhangmen.baidu.com/x?op=12&count=1&title=".$songName."$$";
         } else {
-            //$songName = substr($name, 0, $songPos);
-            //$singerName = substr($name, $songPos+1);
-            //file_put_contents(LOG_FILE, "songName = $songName, singerName=$singerName\n",FILE_APPEND);
             $url = "http://box.zhangmen.baidu.com/x?op=12&count=1&title=".$songName."$$".$singerName."$$$$";            
         }
-        //file_put_contents(LOG_FILE, "url=$url\n", FILE_APPEND);
         nv_log(__FILE__, __FUNCTION__, "url=$url");
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -211,6 +202,13 @@ function generate_order_info() {
 	               "type"       =>"种类",
 	               "cID"        =>"ID",
 	               "state"      =>"状态");
+}
+
+function get_course_type_name($type) {
+	$type_names = array(FRYING => NAME_FRYING, RICE    => NAME_RICE,
+						SOUP   => NAME_SOUP,   SNACK   => NAME_SNACK,
+						ATEA   => NAME_ATEA,   MARMITE => NAME_MARMITE);
+	return $type_names[$type];
 }
 
 function generate_contact_card($info)

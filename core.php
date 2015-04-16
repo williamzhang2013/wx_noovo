@@ -57,7 +57,7 @@ function receiveEvent($object)
 			$content = "event = $object->Event";
 			break;
 	}
-	$result = display_text($object, $content); //transmitText($object, $content);
+	$result = display_text($object, $content); 
 	return $result;
 }
 
