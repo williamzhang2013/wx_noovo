@@ -176,6 +176,12 @@ function order_courses($openID, $courses) {
 	}
 }
 
+// function admin_delete_courses($eName, $courses) {
+// 	$openID = get_usr_openid($eName);
+	
+// 	delete_
+// }
+
 function delete_courses($openID, $courses) {
 	$conn = db_connect();
 	if(!$conn) {
@@ -232,7 +238,8 @@ function get_today_order() {
 		//travels the order array
 		$course = $row['course'];
 		$order_index = 0;
-		//nv_log(__FILE__, __FUNCTION__, "course = $course");
+		$found = false;
+		nv_log(__FILE__, __FUNCTION__, "course = $course");
 		foreach ($order_arr as $order) {			
 			//nv_log(__FILE__, __FUNCTION__, "name=$order[0], price=$order[1], sum=$order[2], type=$order[3]");
 			if (strcmp($order[0], $course) == 0) {
@@ -296,6 +303,20 @@ function get_usr_ename($openID) {
 	$result = mysql_query($sql);
 	$row = mysql_fetch_array($result);
 	return $row['eName'];
+}
+
+function get_usr_openid($eName) {
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	
+	$sql = "SELECT * FROM UserInfo WHERE eName = '" .$eName . "'";
+	$result = mysql_query($sql);
+	$row = mysql_fetch_array($result);
+	return $row['openID'];
 }
 
 function is_new_user($openID) {

@@ -182,8 +182,8 @@ function handler_mlogin($event, $data) {
 
 //////////////////////////////////////////////////////////////////////////
 function handler_admin_help($data) {
-	$content = HELP_ADMIN_LOCK . "\n" .HELP_ADMIN_UNLOCK . "\n";
-	$content .= HELP_ADMIN_QUERY_TODAY . "\n" . HELP_ADMIN_QUERY_DATE . "\n" . HELP_ADMIN_QUERY_WEEK . "\n" . HELP_ADMIN_QUERY_MONTH;
+	$content = HELP_ADMIN_LOCK . "\n" .HELP_ADMIN_UNLOCK . "\n" . HELP_ADMIN_DEL . "\n";
+	$content .= HELP_ADMIN_QUERY_TODAY . "\n" . HELP_ADMIN_QUERY_DATE . "\n" . HELP_ADMIN_QUERY_MONTH. "\n" . HELP_ADMIN_QUERY_USR;
 	$result = display_text($data[0], $content);
 	
 	return $result;
@@ -222,11 +222,40 @@ function handler_admin_query($data) {
 		$content = "Comming soon...";
 	} else {
 		// wrong format
-		$content = HELP_ADMIN_LOCK . "\n" .HELP_ADMIN_UNLOCK . "\n";
-		$content .= HELP_ADMIN_QUERY_TODAY . "\n" . HELP_ADMIN_QUERY_DATE . "\n" . HELP_ADMIN_QUERY_WEEK . "\n" . HELP_ADMIN_QUERY_MONTH;
+		$content = HELP_ADMIN_LOCK . "\n" .HELP_ADMIN_UNLOCK . "\n" . HELP_ADMIN_DEL . "\n";
+		$content .= HELP_ADMIN_QUERY_TODAY . "\n" . HELP_ADMIN_QUERY_DATE . "\n" . HELP_ADMIN_QUERY_MONTH . "\n" . HELP_ADMIN_QUERY_USR;
 	}
 	$result = display_text($data[0], $content);
 	return $result;
+}
+
+function handler_admin_lock($data) {
+	// lock the order system --- user can't order course now
+	lock_order_system();
+	$content = ORDER_SYS_LOCKED;
+	$result = display_text($data[0], $content);
+	return $result;
+}
+
+function handler_admin_unlock($data) {
+	// unlock the order system
+	unlock_order_system();
+	$content = ORDER_SYS_UNLOCKED;
+	$result = display_text($data[0], $content);
+	return $result;
+}
+
+function handler_admin_del($data) {
+	$usr_courses = split("@|＠", $data[1]);
+	$usr = $usr_courses[0];
+	
+	if (is_user_nv_employee($eName)) {
+		$openID = get_usr_openid($eName);
+		array_shift($usr_courses);
+		delete_courses($openID, $courses);
+	} else {
+		// wrong usr
+	}
 }
 
 function handler_madmin($event, $data) {
@@ -242,15 +271,13 @@ function handler_madmin($event, $data) {
 			$result = handler_idle_help($data);
 			break;
 		case EVENT_LOCK:
-			// lock the order system --- user can't order course now
-			lock_order_system();
+			$result = handler_admin_lock($data);
 			break;
 		case EVENT_UNLOCK:
-			// unlock the order system
-			unlock_order_system();
+			$result = handler_admin_unlock($data);
 			break;
 		case EVENT_DEL:
-			// delete a course in one user
+			$result = handler_admin_del($data);
 			break;
 		case EVENT_QUERY:
 			$result = handler_admin_query($data);
@@ -358,6 +385,20 @@ function handler_order_list($data) {
 }
 
 function handler_order_rsv($data) {
+	$content = "";
+	$result = "";
+	if (is_order_locked() == 1) {
+		// order system locked!
+		$content = ORDER_SYS_LOCKED;
+		$result = display_text($data[0], $content);
+	} else {
+		$result = handler_order_rsv_unlocked($data);
+	}
+	
+	return $result;
+}
+
+function handler_order_rsv_unlocked($data) {
 	$result = "";
 	$obj = $data[0];
 	$openID = $obj->FromUserName;
@@ -379,6 +420,20 @@ function handler_order_rsv($data) {
 }
 
 function handler_order_del($data) {
+	$content = "";
+	$result = "";
+	if (is_order_locked() == 1) {
+		// order system locked!
+		$content = ORDER_SYS_LOCKED;
+		$result = display_text($data[0], $content);
+	} else {
+		$result = handler_order_del_unlocked($data);
+	}
+	
+	return $result;
+}
+
+function handler_order_del_unlocked($data) {
 	$result = "";
 	$obj = $data[0];
 	$openID = $obj->FromUserName;

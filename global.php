@@ -73,7 +73,7 @@ define("HELLO_JOKE", "输入'joke'可以放松一下");
 define("HELLO_MUSIC", "输入'音乐+歌名@歌手'可以查询音乐");
 define("HELLO_MSG", "输入'about'可以浏览公司介绍\n输入'吃饭'可以订餐\n输入'contact+英文名'可以查询员工信息\n输入'天气+城市'可以查询城市天气预报\n输入'joke'可以放松一下");
 
-define("PLEASE_LOGIN", "您还没有注册，请输入您的英文名");
+define("PLEASE_LOGIN", "您还没有注册，请注册:\n格式:login+员工名\n例如:login+admin.nv");
 define("HELP_NOT_NVNESE", "您不是Noovo电子的员工，请重新注册!");
 define("HELP_MENU_FRY",   "输入'menu+炒菜'会显示炒菜菜单\n");
 define("HELP_MENU_RICE",  "输入'menu+盖饭'会显示盖浇饭菜单\n");
@@ -90,13 +90,17 @@ define("AFTER_ORDER_QUIT",  "欢迎使用Noovo订餐系统!\n");
 define("HELP_ADMIN_LOCK", "输入'lock'可以锁住订餐系统");
 define("HELP_ADMIN_UNLOCK", "输入'unlock'可以解锁订餐系统");
 define("HELP_ADMIN_QUERY_TODAY", "输入'sum+today'可以查询当天的订餐情况");
-define("HELP_ADMIN_QUERY_DATE", "输入'sum+day@date'可以查询某一天的订餐情况");
+define("HELP_ADMIN_QUERY_DATE", "输入'sum+day@date(yyyy-mm-dd)'可以查询某一天的订餐情况");
 define("HELP_ADMIN_QUERY_WEEK", "输入'sum+week'可以查询本周的订餐情况");
-define("HELP_ADMIN_QUERY_MONTH","输入'sum+month'可以查询本月的订餐情况");
+define("HELP_ADMIN_QUERY_MONTH","输入'sum+month(yyyy-mm)'可以查询本月的订餐情况");
+define("HELP_ADMIN_QUERY_USR", "输入'sum+usr@yyyy-mm'可以查询某个用户的订餐情况");
+define("HELP_ADMIN_DEL", "输入'del+usr@菜名'可以删除某个用户的某道菜");
 
 define("TODAY_NO_ORDER","今天没人订餐!");
 define("TODAY_USR_NOORDER", "今天您没有订餐");
 define("TODAY_USR_ORDER", "今天您订了:");
+define("ORDER_SYS_LOCKED", "订餐系统已上锁!");
+define("ORDER_SYS_UNLOCKED", "订餐系统已解锁!");
 
 define("LINES_PER_PAGE",       100);
 
