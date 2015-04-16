@@ -235,4 +235,24 @@ function generate_contact_card($info)
     return $card;
 }
 
+function get_admin_ls_type($lsstr) {
+	$type = ADMIN_LS_UNDEF;
+	if (strlen($lsstr) == 0) {
+		$type = ADMIN_LS_TODAY;
+	} else {
+		$conditions = split("@|＠", $lsstr);
+		if (strcmp($conditions[0], "date") == 0){
+			$type = ADMIN_LS_DATE;
+		} else if (strcmp($conditions[0], "month") == 0) {
+			$type = ADMIN_LS_MONTH;
+		} else if (strcmp($conditions[0], "usr") == 0) {
+			$type = ADMIN_LS_USR;
+		} else {
+			$type = ADMIN_LS_UNDEF;
+		}
+	}
+	
+	return $type;
+}
+
 ?>

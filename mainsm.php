@@ -132,8 +132,10 @@ function handler_login_login($data) {
 	$result = "";
 	
 	nv_log(__FILE__, __FUNCTION__, "usrname=$usrname");
-	$nvadmin = ADMIN_NAME . '@' .ADMIN_PWD;
-	if (strcmp($usrname, $nvadmin) == 0) {
+	//$nvadmin = ADMIN_NAME . '@' .ADMIN_PWD;
+	$nvadmin = split("@|＠", $usrname);
+	nv_log(__FILE__, __FUNCTION__, "name = $nvadmin[0], password=$nvadmin[1]");
+	if (strcmp($nvadmin[0], ADMIN_NAME) == 0 && strcmp($nvadmin[1], ADMIN_PWD) == 0) {
 		// admin login
 		$GLOBALS['g_main_state'] = STATE_ADMIN;
 		save_usr_main_state($openID);
@@ -187,6 +189,59 @@ function handler_admin_help($data) {
 	$result = display_text($data[0], $content);
 	
 	return $result;
+}
+
+function handler_admin_list_today($data) {
+	$content = "";
+	// collect all today's order
+	$order = get_today_order();
+	if (count($order) == 0) {
+		$content = TODAY_NO_ORDER;
+	} else {
+		$sum = 0;
+		foreach ($order as $item) {
+			$sum += $item[2];
+			$typename = get_course_type_name($item[3]);
+			nv_log(__FILE__, __FUNCTION__, "order item=$item[0], $item[1], $item[2]");
+			$content .= $item[0] . "(".$typename. ")        x" . $item[2]/$item[1]."    ----".$item[2]."\n";
+		}
+		$content .= "总计:  " .$sum;
+	}
+	
+	$result = display_text($data[0], $content);
+	return $result;
+}
+
+function handler_admin_list($data) {
+	$lsstr = strtolower(trim($data[1]));
+	$now = date("Y-m-d");
+	$content = "";
+	$result = "";
+	
+	$type = get_admin_ls_type($lsstr);
+	switch ($type) {
+		case ADMIN_LS_TODAY:
+			$result = handler_admin_list_today($data);
+			break;
+		case ADMIN_LS_DATE:
+			$content = "Comming soon...";
+			$result = display_text($data[0], $content);
+			break;
+		case ADMIN_LS_MONTH:
+			$content = "Comming soon...";
+			$result = display_text($data[0], $content);
+			break;
+		case ADMIN_LS_USR:
+			$content = "Comming soon...";
+			$result = display_text($data[0], $content);
+			break;
+		default:
+			$content = HELP_ADMIN_LOCK . "\n" .HELP_ADMIN_UNLOCK . "\n" . HELP_ADMIN_DEL . "\n";
+			$content .= HELP_ADMIN_QUERY_TODAY . "\n" . HELP_ADMIN_QUERY_DATE . "\n" . HELP_ADMIN_QUERY_MONTH . "\n" . HELP_ADMIN_QUERY_USR;
+			$result = display_text($data[0], $content);
+			break;
+	}
+	return $result;	
 }
 
 function handler_admin_query($data) {
@@ -248,14 +303,22 @@ function handler_admin_unlock($data) {
 function handler_admin_del($data) {
 	$usr_courses = split("@|＠", $data[1]);
 	$usr = $usr_courses[0];
+	$content = "";
 	
 	if (is_user_nv_employee($usr)) {
 		$openID = get_usr_openid($usr);
 		array_shift($usr_courses);
 		delete_courses($openID, $usr_courses);
+		$content = "您取消了" . $usr ."的:";
+		foreach ($usr_courses as $course) {
+			$content .= "\n" . $course;
+		}		
 	} else {
 		// wrong usr
+		$content = NO_USR_FOUND . $usr;
 	}
+	$result = display_text($data[0], $content);
+	return $result;
 }
 
 function handler_madmin($event, $data) {
@@ -279,9 +342,12 @@ function handler_madmin($event, $data) {
 		case EVENT_DEL:
 			$result = handler_admin_del($data);
 			break;
-		case EVENT_QUERY:
-			$result = handler_admin_query($data);
+		case EVENT_LIST:
+			$result = handler_admin_list($data);
 			break;
+// 		case EVENT_QUERY:
+// 			$result = handler_admin_query($data);
+// 			break;
 		case EVENT_HELP:
 		default:
 			$result = handler_admin_help($data);
@@ -323,15 +389,21 @@ function handler_order_login($data) {
 	$obj = $data[0];
 	$openID = $obj->FromUserName;
 	$usrname = $data[1];
-	$nvadmin = ADMIN_NAME . '@' .ADMIN_PWD;
 	$content = "";
-	if (strcmp($usrname, $nvadmin) == 0) {
+	
+	//$nvadmin = ADMIN_NAME . '@' .ADMIN_PWD;
+	$nvadmin = split("@|＠", $usrname);
+	nv_log(__FILE__, __FUNCTION__, "name = $nvadmin[0], password=$nvadmin[1]");
+	if (strcmp($nvadmin[0], ADMIN_NAME) == 0 && strcmp($nvadmin[1], ADMIN_PWD) == 0) {
 		// admin login
 		$GLOBALS['g_main_state'] = STATE_ADMIN;
 		save_usr_main_state($openID);
 		$content = HELLO_ADMIN;
+		$result = display_text($data[0], $content);
+	} else {
+		$result = handler_order_help($data);
 	}	
-	$result = display_text($data[0], $content);
+	
 	return $result;
 }
 

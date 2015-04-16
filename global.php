@@ -29,10 +29,13 @@ define("EVENT_RSV",           15);
 define("EVENT_NEXT",          16);
 define("EVENT_LIST",          17);
 
-
-
 define("ADMIN_NAME",          "nvadmin");
 define("ADMIN_PWD",           "platypus");
+define("ADMIN_LS_UNDEF",      0);
+define("ADMIN_LS_TODAY",      1);
+define("ADMIN_LS_DATE",       2);
+define("ADMIN_LS_MONTH",      3);
+define("ADMIN_LS_USR",        4);
 
 // define("INPUT_ELSE",          0);
 // define("INPUT_ABOUT",         1);
@@ -89,11 +92,11 @@ define("AFTER_ORDER_QUIT",  "欢迎使用Noovo订餐系统!\n");
 
 define("HELP_ADMIN_LOCK", "输入'lock'可以锁住订餐系统");
 define("HELP_ADMIN_UNLOCK", "输入'unlock'可以解锁订餐系统");
-define("HELP_ADMIN_QUERY_TODAY", "输入'sum+today'可以查询当天的订餐情况");
-define("HELP_ADMIN_QUERY_DATE", "输入'sum+day@date(yyyy-mm-dd)'可以查询某一天的订餐情况");
-define("HELP_ADMIN_QUERY_WEEK", "输入'sum+week'可以查询本周的订餐情况");
-define("HELP_ADMIN_QUERY_MONTH","输入'sum+month(yyyy-mm)'可以查询本月的订餐情况");
-define("HELP_ADMIN_QUERY_USR", "输入'sum+usr@yyyy-mm'可以查询某个用户的订餐情况");
+define("HELP_ADMIN_QUERY_TODAY", "输入'ls'可以查询当天的订餐情况");
+define("HELP_ADMIN_QUERY_DATE", "输入'ls+date@date(yyyy-mm-dd)'可以查询某一天的订餐情况");
+define("HELP_ADMIN_QUERY_WEEK", "输入'ls+week'可以查询本周的订餐情况");
+define("HELP_ADMIN_QUERY_MONTH","输入'ls+month@month(yyyy-mm)'可以查询本月的订餐情况");
+define("HELP_ADMIN_QUERY_USR", "输入'ls+usr@yyyy-mm'可以查询某个用户的订餐情况");
 define("HELP_ADMIN_DEL", "输入'del+usr@菜名'可以删除某个用户的某道菜");
 
 define("TODAY_NO_ORDER","今天没人订餐!");
@@ -101,6 +104,7 @@ define("TODAY_USR_NOORDER", "今天您没有订餐");
 define("TODAY_USR_ORDER", "今天您订了:");
 define("ORDER_SYS_LOCKED", "订餐系统已上锁!");
 define("ORDER_SYS_UNLOCKED", "订餐系统已解锁!");
+define("NO_USR_FOUND", "找不到用户");
 
 define("LINES_PER_PAGE",       100);
 
