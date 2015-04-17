@@ -84,6 +84,9 @@ function get_music_info($name)
         nv_log(__FILE__, __FUNCTION__, "songs[0] = $songs[0], songs[1] = $songs[1]");
         $songName = $songs[0];
         $singerName = $songs[1];
+        if (strlen($songs[1]) == 0) {
+        	$singerName = NOOVO_RECMD;
+        }
         $url = "";
         if (strlen($singerName) == 0) {
             // don't find the singer name
@@ -148,13 +151,13 @@ function get_music_info($name)
             				$music = substr($menu->encode, 0, strripos($menu->encode, '/')+1).$mp3url;
             				file_put_contents(LOG_FILE, "try to find music... \nmp3url=$mp3url\nmusic=$music\n", FILE_APPEND);
             				
-            				$result = array("Title"           => $songName,
-            							"Description"     =>"Noovo推荐",
+            				$result = array("Title"       => $songName,
+            							"Description"     =>$singerName,
             							"MusicUrl"        =>urldecode($music),
             							"HQMusicUrl"      =>urldecode($music),);
-            				if ($songPos > 0) {
-            					$result["Description"] = $singerName;
-            				}
+//             				if ($songPos > 0) {
+//             					$result["Description"] = $singerName;
+//             				}
             				break;
             			}
             }

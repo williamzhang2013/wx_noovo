@@ -67,6 +67,7 @@ define("NSNACK",              5);
 
 define("USER_INFO_VER",       "1.0.0");
 
+define("NOOVO_RECMD", "Noovo推荐");
 define("HELLO_ADMIN", "Admin Login!");
 define("HELLO_ABOUT", "输入'about'可以浏览公司介绍");
 define("HELLO_ORDER", "输入'吃饭'可以订餐");
