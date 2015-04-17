@@ -199,16 +199,99 @@ function handler_admin_list_today($data) {
 		$content = TODAY_NO_ORDER;
 	} else {
 		$sum = 0;
+		$dishs = 0;
 		foreach ($order as $item) {
 			$sum += $item[2];
+			$dishs += $item[2]/$item[1];
 			$typename = get_course_type_name($item[3]);
 			nv_log(__FILE__, __FUNCTION__, "order item=$item[0], $item[1], $item[2]");
 			$content .= $item[0] . "(".$typename. ")        x" . $item[2]/$item[1]."    ----".$item[2]."\n";
 		}
-		$content .= "总计:  " .$sum;
+		$content .= "总计:  " .$dishs . "份   金额:" .$sum;
 	}
 	
 	$result = display_text($data[0], $content);
+	return $result;
+}
+
+function handler_admin_list_date($data) {
+	$content = "";
+	$lsstr = strtolower(trim($data[1]));
+	$conditions = split("@|＠", $lsstr);
+	$lsdate = $conditions[1];
+	$ymd = split("-", $lsdate);
+	//$year = date("Y");
+	//if ($ymd[0] <= $year && $ymd[1] <=12 && $ymd[2] <=31)
+	if (strlen($ymd[0]) == 0 || strlen($ymd[1]) == 0 || strlen($ymd[2]) == 0) {
+		$content = HELP_ADMIN_QUERY_DATE . "\n";
+	} else {
+		$day = date("Y-m-d", mktime(0,0,0,$ymd[1],$ymd[2],$ymd[0]));
+		//
+		$order = get_date_order($day);
+		if (count($order) == 0) {
+			$content = TODAY_NO_ORDER;
+		} else {
+			$sum = 0;
+			$dishs = 0;
+			foreach ($order as $item) {
+				$sum += $item[2];
+				$dishs += $item[2]/$item[1];
+				$typename = get_course_type_name($item[3]);
+				nv_log(__FILE__, __FUNCTION__, "order item=$item[0], $item[1], $item[2]");
+				$content .= $item[0] . "(".$typename. ")        x" . $item[2]/$item[1]."    ----".$item[2]."\n";
+			}
+			$content .= "总计:  " .$dishs . "份   金额:" .$sum;
+		}
+	}
+	
+	$result = display_text($data[0], $content);
+	return $result;	
+}
+
+function handler_admin_list_month($data) {
+	$content = "";
+	$lsstr = strtolower(trim($data[1]));
+	$conditions = split("@|＠", $lsstr);
+	$lsdate = $conditions[1];
+
+	
+	$sum = get_month_sum($lsdate);
+	$content .= $lsdate ."月总金额:  " .$sum;
+	$result = display_text($data[0], $content);
+	return $result;
+}
+
+function handler_admin_list_usr($data) {
+	$days = array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+	$lsstr = strtolower(trim($data[1]));
+	$conditions = split("@|＠", $lsstr);
+	
+	// get openID from usr
+	$usr = $conditions[1];
+	$openID = get_usr_openid($usr);
+	nv_log(__FILE__, __FUNCTION__, "usr=$usr, openID=$openID");
+	
+	// get the year & month
+	$lsdate = $conditions[2];
+	$ymd = split("-", $lsdate);
+	$year = (int)$ymd[0];
+	$month = (int)$ymd[1];
+	nv_log(__FILE__, __FUNCTION__, "year=$year, month=$month");
+	
+	$content = $usr. ": " . $lsdate . "\n";
+	$sum = 0;
+	$days[1] += is_leap_year($year);
+	for ($i=1; $i<=$days[$month]; $i++) {
+		$day = date("Y-m-d", mktime(0,0,0,$month,$i,$year));
+		$day_sum = get_date_usr_sum($openID, $day);
+		if ($day_sum > 0) {
+			$sum += $day_sum;
+			$content .= $day . "        --- ".$day_sum . "\n";
+		}
+	}
+	$content .= "金额: " . $sum;
+	$result = display_text($data[0], $content);
+	
 	return $result;
 }
 
@@ -224,16 +307,13 @@ function handler_admin_list($data) {
 			$result = handler_admin_list_today($data);
 			break;
 		case ADMIN_LS_DATE:
-			$content = "Comming soon...";
-			$result = display_text($data[0], $content);
+			$result = handler_admin_list_date($data);
 			break;
 		case ADMIN_LS_MONTH:
-			$content = "Comming soon...";
-			$result = display_text($data[0], $content);
+			$result = handler_admin_list_month($data);
 			break;
 		case ADMIN_LS_USR:
-			$content = "Comming soon...";
-			$result = display_text($data[0], $content);
+			$result = handler_admin_list_usr($data);
 			break;
 		default:
 			$content = HELP_ADMIN_LOCK . "\n" .HELP_ADMIN_UNLOCK . "\n" . HELP_ADMIN_DEL . "\n";

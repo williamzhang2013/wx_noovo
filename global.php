@@ -96,7 +96,7 @@ define("HELP_ADMIN_QUERY_TODAY", "输入'ls'可以查询当天的订餐情况");
 define("HELP_ADMIN_QUERY_DATE", "输入'ls+date@date(yyyy-mm-dd)'可以查询某一天的订餐情况");
 define("HELP_ADMIN_QUERY_WEEK", "输入'ls+week'可以查询本周的订餐情况");
 define("HELP_ADMIN_QUERY_MONTH","输入'ls+month@month(yyyy-mm)'可以查询本月的订餐情况");
-define("HELP_ADMIN_QUERY_USR", "输入'ls+usr@yyyy-mm'可以查询某个用户的订餐情况");
+define("HELP_ADMIN_QUERY_USR", "输入'ls+usr@name@yyyy-mm'可以查询某个用户的订餐情况");
 define("HELP_ADMIN_DEL", "输入'del+usr@菜名'可以删除某个用户的某道菜");
 
 define("TODAY_NO_ORDER","今天没人订餐!");

@@ -199,6 +199,29 @@ function delete_courses($openID, $courses) {
 	}
 }
 
+function get_date_usr_sum($openID, $day) {
+	nv_log(__FILE__, __FUNCTION__, "day=$day");
+	$sum = 0;
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$sql = "SELECT * FROM OrderInfo WHERE dt = '" .$day . "' AND openID = '" . $openID . "'";
+	$result = mysql_query($sql);
+	while ($row = mysql_fetch_array($result)) {
+		$course = $row['course'];	
+		
+		$sql1 = "SELECT * FROM MenuInfo WHERE cName = '" .$course . "'";
+		$result1 = mysql_query($sql1);
+		$row1 = mysql_fetch_array($result1);
+		$sum += $row1['cPrice'];		
+	}	
+	
+	return $sum;
+}
+
 function get_today_usr_order($openID) {
 	$today = date("Y-m-d");
 	$courses = array();
@@ -218,10 +241,8 @@ function get_today_usr_order($openID) {
 	return $courses;
 }
 
-// the order_arr is two dementions array
-// the order_arr_item should be (course, price, total)
-function get_today_order() {
-	$today = date("Y-m-d");
+function get_date_order($day) {
+	//$today = date("Y-m-d");
 	$order_arr = array();
 	$course = "";
 	$found = false;
@@ -232,7 +253,7 @@ function get_today_order() {
 		exit(0);
 	}
 	mysql_select_db("nv_contact", $conn);
-	$sql = "SELECT * FROM OrderInfo WHERE dt = '" .$today . "'";
+	$sql = "SELECT * FROM OrderInfo WHERE dt = '" .$day . "'";
 	$result = mysql_query($sql);
 	while ($row = mysql_fetch_array($result)) {
 		//travels the order array
@@ -262,6 +283,79 @@ function get_today_order() {
 	}
 	
 	return $order_arr;	
+}
+
+// the order_arr is two dementions array
+// the order_arr_item should be (course, price, total)
+function get_today_order() {
+	$today = date("Y-m-d");
+	
+	return get_date_order($today);
+// 	$order_arr = array();
+// 	$course = "";
+// 	$found = false;
+	
+// 	$conn = db_connect();
+// 	if(!$conn) {
+// 		//die('Could not connect: ' . mysql_error());
+// 		exit(0);
+// 	}
+// 	mysql_select_db("nv_contact", $conn);
+// 	$sql = "SELECT * FROM OrderInfo WHERE dt = '" .$today . "'";
+// 	$result = mysql_query($sql);
+// 	while ($row = mysql_fetch_array($result)) {
+// 		//travels the order array
+// 		$course = $row['course'];
+// 		$order_index = 0;
+// 		$found = false;
+// 		nv_log(__FILE__, __FUNCTION__, "course = $course");
+// 		foreach ($order_arr as $order) {			
+// 			//nv_log(__FILE__, __FUNCTION__, "name=$order[0], price=$order[1], sum=$order[2], type=$order[3]");
+// 			if (strcmp($order[0], $course) == 0) {
+// 				//nv_log(__FILE__, __FUNCTION__, "FOUND!");
+// 				$order_arr[$order_index][2] += $order_arr[$order_index][1];
+// 				$found = true;
+// 				break;
+// 			}
+// 			$order_index++;
+// 		}
+	
+// 		if (!$found) {
+// 			// try to get the price in another table
+// 			$sql1 = "SELECT * FROM MenuInfo WHERE cName = '" .$course . "'";
+// 			$result1 = mysql_query($sql1);
+// 			$row1 = mysql_fetch_array($result1);
+// 			// insert a new item
+// 			$order_arr[] = array($course, $row1['cPrice'], $row1['cPrice'], $row1['cType']);
+// 		}
+// 	}
+	
+// 	return $order_arr;	
+}
+
+function  get_month_sum($month) {
+	$sum = 0;
+	$conn = db_connect();
+	if(!$conn) {
+		//die('Could not connect: ' . mysql_error());
+		exit(0);
+	}
+	mysql_select_db("nv_contact", $conn);
+	$sql = "SELECT * FROM OrderInfo";
+	$result = mysql_query($sql);
+	while ($row = mysql_fetch_array($result)) {
+		$item_dt = $row['dt'];
+		$course = $row['course'];
+		if (strstr($item_dt, $month)) {
+			//
+			$sql1 = "SELECT * FROM MenuInfo WHERE cName = '" .$course . "'";
+			$result1 = mysql_query($sql1);
+			$row1 = mysql_fetch_array($result1);
+			$sum += $row1['cPrice'];
+		}
+	}
+	
+	return $sum;
 }
 
 function is_user_nv_employee($eName) {
