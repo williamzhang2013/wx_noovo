@@ -1,6 +1,11 @@
 <?php
 
 // costant
+// find face constant
+define("API_KEY", "443eeb6b92c9c5e33389686939a7583c");
+define("API_SECRET", "liv14AYyFJ2OKThNknkpTnpbro2lcEUF");
+define("API_URL", "apius.faceplusplus.com");
+
 define("LOG_FILE", "/tmp/log/noovo.log");
 define("NV_FILE", "/tmp/log/nv.dat");
 
